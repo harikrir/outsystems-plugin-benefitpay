@@ -1,0 +1,14 @@
+{
+  "name": "outsystems-plugin-benefitpay",
+  "version": "1.0.0",
+  "description": "",
+  "cordova": {
+    "id": "outsystems-plugin-benefitpay",
+    "platforms": ["ios", "android"]
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "André Grillo @ OutSystems",
+  "license": "MIT"
+}
