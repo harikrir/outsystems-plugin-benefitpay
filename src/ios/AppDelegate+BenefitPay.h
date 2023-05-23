@@ -13,6 +13,5 @@
 @property (nonatomic, strong) BPDLPaymentCallBackItem *paymentCallback;
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL*)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
-- (void)applicationWillEnterForeground:(UIApplication *)application;
 
 @end
