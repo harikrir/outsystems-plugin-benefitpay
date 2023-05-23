@@ -37,7 +37,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 let andMerchantCategoryId = command.arguments[8] as? String,
                 let andReferenceId = command.arguments[9] as? String {
                 
-                let andCallBackTag = "callbackTag_placeholder"
+                let andCallBackTag = "callbackTag_placeholder".lowercased()
                 
                 //Set the callback observer
                 NotificationCenter.default.addObserver(self, selector: #selector(handleCallBack(_:)), name: NSNotification.Name(rawValue: "CallbackNotification"), object: nil)
