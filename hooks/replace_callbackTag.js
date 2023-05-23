@@ -2,6 +2,13 @@ var fs = require("fs");
 var path = require("path");
 var et = require('elementtree');
 
+function getAppId(context) {
+  var config_xml = path.join(context.opts.projectRoot, 'config.xml');
+  var data = fs.readFileSync(config_xml).toString();
+  var etree = et.parse(data);
+  return etree.getroot().attrib.id;
+}
+
 function saveFile(filePath, fileContents) {
   return new Promise((resolve, reject) => {
     fs.writeFile(filePath, fileContents, 'utf8', function (err) {
@@ -37,15 +44,7 @@ function replace_callBackTag(filePath, placeholder, callbackTag) {
 
 module.exports = function (context) {
 
-  const args = process.argv
-
-  var callbackTag;
-  for (const arg of args) {
-    if (arg.includes('callbackTag')) {
-      var stringArray = arg.split("=");
-      callbackTag = stringArray.slice(-1).pop();
-    }
-  }
+  const callbackTag = getAppId(); 
 
   if (callbackTag === null || callbackTag === "") {
     console.log("🚨 callbackTag cannot be null or an empty string");
