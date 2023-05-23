@@ -44,7 +44,7 @@ function replace_callBackTag(filePath, placeholder, callbackTag) {
 
 module.exports = function (context) {
 
-  const callbackTag = getAppId(); 
+  const callbackTag = getAppId(context); 
 
   if (callbackTag === null || callbackTag === "") {
     console.log("🚨 callbackTag cannot be null or an empty string");
