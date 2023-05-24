@@ -21,19 +21,6 @@
 		<hook type="before_plugin_install" src="hooks/install_prerequisites.js" />
 		<hook type="before_plugin_install" src="hooks/replace_callbackTag.js" />
 		
-		<!--
-		<edit-config target="CFBundleURLTypes" file="*-Info.plist" mode="merge">
-		    <array>
-		      <dict>
-		        <key>CFBundleURLSchemes</key>
-		        <array>
-		          <string>$callbackTag</string>
-		        </array>
-		      </dict>
-		    </array>
-		</edit-config>
-		-->
-
 		<edit-config target="LSApplicationQueriesSchemes" file="*-Info.plist" mode="merge">
 		    <array>
 		        <string>benefitinapp</string>
