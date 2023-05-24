@@ -48,7 +48,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 self.bPButton!.delegate = self
                 guard let innerView = bPButton!.subviews.first, let button = innerView.subviews.first as? UIButton else {return}
                 button.sendActions(for: .allTouchEvents)
-                sendPluginResult(status: CDVCommandStatus_OK, message: "Payment Request sent", keepCallback: true)
+                //sendPluginResult(status: CDVCommandStatus_OK, message: "Payment Request sent", keepCallback: true)
                 
             } else {
                 sendPluginResult(status: CDVCommandStatus_ERROR, message: "Invalid checkout configuration: Invalid input Types")
