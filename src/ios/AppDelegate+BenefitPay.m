@@ -5,13 +5,20 @@
 //
 
 #import "AppDelegate+BenefitPay.h"
+#import <objc/runtime.h>
 
 @implementation AppDelegate (BenefitPay)
 
-@dynamic paymentCallback;
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL*)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
-{
+- (BPDLPaymentCallBackItem *)paymentCallback {
+    return objc_getAssociatedObject(self, @selector(paymentCallback));
+}
+
+- (void)setPaymentCallback:(BPDLPaymentCallBackItem *)paymentCallback {
+    objc_setAssociatedObject(self, @selector(paymentCallback), paymentCallback, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options{
     self.paymentCallback = [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
     
     NSString* statusString = [[NSString alloc] init];
