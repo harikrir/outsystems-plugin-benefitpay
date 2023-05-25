@@ -7,13 +7,21 @@
 		<clobbers target="cordova.plugins.BenefitPay" />
 	</js-module>
 	<platform name="android">
+
+		<hook type="after_plugin_install" src="hooks/move_android_sdk.js"/>
+		
+		<!-- BenefitPay SDK -->
+		<source-file src="src/android/libs/benefitinappsdk-1.0.23.aar" target-dir="libs" /> 
 		<config-file parent="/*" target="res/xml/config.xml">
-			<feature name="outsystems-plugin-benefitpay">
-				<param name="android-package" value="outsystems-plugin-benefitpay.outsystems-plugin-benefitpay" />
+			<feature name="BenefitPay">
+				<param name="android-package" value="com.benefitpay.BenefitPay" />
 			</feature>
 		</config-file>
 		<config-file parent="/*" target="AndroidManifest.xml" />
-		<source-file src="src/android/BenefitPay.java" target-dir="src/outsystems-plugin-benefitpay/outsystems-plugin-benefitpay" />
+		<source-file src="src/android/BenefitPay.java" target-dir="src/com/benefitpay" />
+		<framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+		<source-file src="src/android/build-extras.gradle" target-dir="app" />
+
 	</platform>
 	<platform name="ios">
 
