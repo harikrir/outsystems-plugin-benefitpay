@@ -1,6 +1,7 @@
 package com.benefitpay;
 
 import static android.app.Activity.RESULT_OK;
+import static android.app.Activity.RESULT_CANCELED;
 
 import android.content.Intent;
 import org.json.JSONObject;
@@ -78,8 +79,9 @@ public class BenefitPay extends CordovaPlugin implements BenefitInAppButtonListe
                 String message = (transaction.getTransactionMessage() == null || transaction.getTransactionMessage().isEmpty()) ? "" : transaction.getTransactionMessage();
                 String referenceId = (transaction.getReferenceNumber() == null || transaction.getReferenceNumber().isEmpty()) ? "" : transaction.getReferenceNumber();
 
-                JSONObject json = new JSONObject();
+
                 try {
+                    JSONObject json = new JSONObject();
                     json.put("status", "success");
                     json.put("merchantName", merchantName);
                     json.put("cardNumber", cardNumber);
@@ -94,7 +96,9 @@ public class BenefitPay extends CordovaPlugin implements BenefitInAppButtonListe
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    callbackContext.error("Error: Could not create JSON object. Invalid types received from SDK?");
+                    //callbackContext.error("Error: Could not create JSON object. Invalid types received from SDK?");
+                    String jsonString = "{\"status\": \"failed\", \"message\": \"Error: Could not create JSON object. Invalid types received from SDK?\", \"referenceId\": " + referenceId + "}";
+                    callbackContext.error(jsonString);
                 }
             }
 
@@ -125,7 +129,10 @@ public class BenefitPay extends CordovaPlugin implements BenefitInAppButtonListe
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    callbackContext.error("Error: Could not create JSON object. Invalid types received from SDK?");
+                    //callbackContext.error("Error: Could not create JSON object. Invalid types received from SDK?");
+                    String jsonString = "{\"status\": \"failed\", \"message\": \"Error: Could not create JSON object. Invalid types received from SDK?\", \"referenceId\": " + referenceId + "}";
+                    callbackContext.error(jsonString);
+
                 }
             }
         };
@@ -136,7 +143,9 @@ public class BenefitPay extends CordovaPlugin implements BenefitInAppButtonListe
 
     @Override
     public void onFail(int i) {
-        callbackContext.error("Error: Could not complete transaction request. Are Inputs parameters valid?");
+        //callbackContext.error("Error: Could not complete transaction request. Are Inputs parameters valid?");
+        String jsonString = "{\"status\": \"failed\", \"message\": \"Error: Could not complete transaction request. Are Input parameters valid?\", \"referenceId\": " + andReferenceId + "}";
+        callbackContext.error(jsonString);
     }
 
     @Override
@@ -147,8 +156,7 @@ public class BenefitPay extends CordovaPlugin implements BenefitInAppButtonListe
         if (resultCode == RESULT_OK) {
             BenefitInAppHelper.handleResult(intent);
         } else {
-            BenefitInAppHelper.handleResult(intent);
-            if (resultCode == 0) {
+            if (resultCode == RESULT_CANCELED) {
                 JSONObject json = new JSONObject();
                 try {
                     json.put("status", "cancelled");
@@ -165,7 +173,9 @@ public class BenefitPay extends CordovaPlugin implements BenefitInAppButtonListe
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    callbackContext.error("Error: Could not create JSON object. Invalid types received from SDK?");
+                    //callbackContext.error("Error: Could not create JSON object. Invalid types received from SDK?");
+                    String jsonString = "{\"status\": \"failed\", \"message\": \"Error: Could not create JSON object. Invalid types received from SDK?\", \"referenceId\": " + this.andReferenceId + "}";
+                    callbackContext.error(jsonString);
                 }
             }
         }
