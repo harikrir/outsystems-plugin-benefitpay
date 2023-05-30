@@ -54,7 +54,7 @@ public class BenefitPay extends CordovaPlugin implements BenefitInAppButtonListe
             andMerchantCity = args.getString(6);
             andCountryCode = args.getString(7);
             andMerchantCategoryId = args.getString(8);
-            andReferenceId = generateRandomNumber();// args.getString(9);
+            andReferenceId = args.getString(9);
 
             BenefitInAppButton checkoutButton = new BenefitInAppButton(this.cordova.getContext());
             checkoutButton.setListener(this);
