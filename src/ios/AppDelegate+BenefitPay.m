@@ -52,14 +52,14 @@
     NSString *referenceId = (self.paymentCallback.referenceId == nil || self.paymentCallback.referenceId.length == 0) ? @"" : self.paymentCallback.referenceId;
     
     NSDictionary *userInfo = @{
-        @"Status": statusString,
-        @"MerchantName": merchantName,
-        @"CardNumber": cardNumber,
-        @"Currency": currency,
-        @"CurrencyCode": currencyCode,
-        @"Amount": amount,
-        @"Message": message,
-        @"ReferenceId": referenceId
+        @"status": statusString,
+        @"merchantName": merchantName,
+        @"cardNumber": cardNumber,
+        @"currency": currency,
+        @"currencyCode": currencyCode,
+        @"amount": amount,
+        @"message": message,
+        @"referenceId": referenceId
     };
 
     [[NSNotificationCenter defaultCenter] postNotificationName:kCallbackNotification object:nil userInfo:userInfo];

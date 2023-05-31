@@ -27,21 +27,21 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         
         if command.arguments.count == 10 {
             if let appId = command.arguments[0] as? String,
-                let andSecretKey = command.arguments[1] as? String,
-                let andAmount = command.arguments[2] as? String,
-                let andCurrencyCode = command.arguments[3] as? String,
-                let andMerchantId = command.arguments[4] as? String,
-                let andMerchantName = command.arguments[5] as? String,
-                let andMerchantCity = command.arguments[6] as? String,
-                let andCountryCode = command.arguments[7] as? String,
-                let andMerchantCategoryId = command.arguments[8] as? String,
-                let andReferenceId = command.arguments[9] as? String {
-                
-                let andCallBackTag = "callbackTag_placeholder".lowercased()
+               let andSecretKey = command.arguments[1] as? String,
+               let andAmount = command.arguments[2] as? String,
+               let andCurrencyCode = command.arguments[3] as? String,
+               let andMerchantId = command.arguments[4] as? String,
+               let andMerchantName = command.arguments[5] as? String,
+               let andMerchantCity = command.arguments[6] as? String,
+               let andCountryCode = command.arguments[7] as? String,
+               let andMerchantCategoryId = command.arguments[8] as? String,
+               let andReferenceId = command.arguments[9] as? String {
+                                
+                let andCallBackTag = "com.outsystems.experts.BenefitPay".lowercased()
                 
                 //Set the callback observer
                 NotificationCenter.default.addObserver(self, selector: #selector(handleCallBack(_:)), name: NSNotification.Name(rawValue: "CallbackNotification"), object: nil)
-
+                
                 self.checkoutConfiguration = BPInAppConfiguration(appId: appId, andSecretKey: andSecretKey, andAmount: andAmount, andCurrencyCode: andCurrencyCode, andMerchantId: andMerchantId, andMerchantName: andMerchantName, andMerchantCity: andMerchantCity, andCountryCode: andCountryCode, andMerchantCategoryId: andMerchantCategoryId, andReferenceId: andReferenceId, andCallBackTag: andCallBackTag)
                 
                 self.bPButton = BPInAppButton()
@@ -59,7 +59,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             sendPluginResult(status: CDVCommandStatus_ERROR, message: message)
         }
     }
-
+    
     @objc func handleCallBack(_ notification: Notification) {
         if let callbackInfo = notification.userInfo as? [String: String] {
             do {
@@ -67,7 +67,11 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 
                 if let jsonString = String(data: jsonData, encoding: .utf8) {
                     print(jsonString)
-                    sendPluginResult(status: CDVCommandStatus_OK, message: jsonString)
+                    if callbackInfo["status"] == "success" {
+                        sendPluginResult(status: CDVCommandStatus_OK, message: jsonString)
+                    } else {
+                        sendPluginResult(status: CDVCommandStatus_ERROR, message: jsonString)
+                    }
                 }
             } catch {
                 print("Error converting NSDictionary to JSON: \(error)")
@@ -79,7 +83,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             sendPluginResult(status: CDVCommandStatus_ERROR, message: message)
         }
     }
-   
+    
     func sendPluginResult(status: CDVCommandStatus, message: String, keepCallback: Bool = false) {
         let pluginResult = CDVPluginResult(status: status, messageAs: message)
         if keepCallback {
@@ -89,4 +93,11 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             self.commandDelegate!.send(pluginResult, callbackId: callbackId)
         }
     }
+    
+    func generateRandomNumber() -> Int {
+        let randomNumber = Int.random(in: 100_000...999_999)
+        return randomNumber
+    }
+
+        
 }
