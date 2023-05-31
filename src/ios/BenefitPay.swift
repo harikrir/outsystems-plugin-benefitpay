@@ -51,10 +51,12 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 //sendPluginResult(status: CDVCommandStatus_OK, message: "Payment Request sent", keepCallback: true)
                 
             } else {
-                sendPluginResult(status: CDVCommandStatus_ERROR, message: "Invalid checkout configuration: Invalid input Types")
+                let message = "{\"status\": \"failed\", \"message\": \"Invalid checkout configuration: Invalid input Types\"}"
+                sendPluginResult(status: CDVCommandStatus_ERROR, message: message)
             }
         } else {
-            sendPluginResult(status: CDVCommandStatus_ERROR, message: "Invalid checkout configuration: There MUST be eleven input parameters")
+            let message = "{\"status\": \"failed\", \"message\": \"Invalid checkout configuration: There MUST be eleven input parameters\"}"
+            sendPluginResult(status: CDVCommandStatus_ERROR, message: message)
         }
     }
 
@@ -69,10 +71,12 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 }
             } catch {
                 print("Error converting NSDictionary to JSON: \(error)")
-                sendPluginResult(status: CDVCommandStatus_ERROR, message: "Error converting callback to JSON: \(error)")
+                let message = "{\"status\": \"failed\", \"message\": \"Error converting callback to JSON: \(error)\"}"
+                sendPluginResult(status: CDVCommandStatus_ERROR, message: message)
             }
         } else {
-            sendPluginResult(status: CDVCommandStatus_ERROR, message: "Error: strange object received as callback")
+            let message = "{\"status\": \"failed\", \"message\": \"Error: strange object received as callback\"}"
+            sendPluginResult(status: CDVCommandStatus_ERROR, message: message)
         }
     }
    
