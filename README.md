@@ -1,4 +1,3 @@
-```
 # BenefitPay Cordova Plugin
 
 | ![OutSystems Logo](https://media.trustradius.com/product-logos/yQ/pJ/SN525CFRJHL3-180x180.PNG) | A Cordova plugin for integrating the BenefitPay SDK into iOS and Android apps. |
