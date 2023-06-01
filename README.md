@@ -8,48 +8,16 @@
 
 ## Installation
 
-To use this plugin, follow the steps below:
-
-1. Install Cordova:
-   ```shell
-   npm install -g cordova
-   ```
-
-2. Create a new Cordova project:
-   ```shell
-   cordova create MyApp
-   cd MyApp
-   ```
-
-3. Add the platform(s) you want to support:
-   ```shell
-   cordova platform add ios
-   cordova platform add android
-   ```
-
-4. Install the BenefitPay plugin:
+Install the BenefitPay plugin:
    ```shell
    cordova plugin add https://github.com/andregrillo/outsystems-plugin-benefitpay.git
    ```
 
-5. Configure your app to use the BenefitPay plugin. See the Usage section for details.
-
 ## Usage
 
-### iOS
+### iOS & Android
 
-1. Open your Cordova project in Xcode:
-   ```shell
-   open platforms/ios/MyApp.xcworkspace
-   ```
-
-2. In your Cordova app's JavaScript code, call the `checkout` method to initiate the payment process. Pass the required parameters as arguments.
-
-### Android
-
-1. Open your Cordova project in Android Studio.
-
-2. In your Cordova app's JavaScript code, call the `checkout` method to initiate the payment process. Pass the required parameters as arguments.
+- In your Cordova app's JavaScript code, call the `checkout` method to initiate the payment process. Pass the required parameters as arguments.
 
 ## API Reference
 
