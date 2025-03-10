@@ -1,5 +1,13 @@
 var exec = require('cordova/exec');
 
-exports.checkout = function (success, error, arg0) {
-    exec(success, error, 'BenefitPay', 'checkout', arg0);
-};
+
+
+
+var BenefitPay = {
+    checkout: function (success, error, arg0) {
+        exec(success, error, 'BenefitPay', 'checkout', arg0);
+    }
+}
+
+
+    module.exports = BenefitPay;
