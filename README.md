@@ -1,6 +1,6 @@
 # BenefitPay Cordova Plugin
 
-| ![OutSystems Logo](https://media.trustradius.com/product-logos/yQ/pJ/SN525CFRJHL3-180x180.PNG) | A Cordova plugin for integrating the BenefitPay SDK into iOS and Android apps. |
+| A Cordova plugin for integrating the BenefitPay SDK into iOS and Android apps. |
 |----------|----------|
 | Platform Support | iOS & Android   | 
 | License | MIT | 
@@ -10,7 +10,7 @@
 
 Install the BenefitPay plugin:
    ```shell
-   cordova plugin add https://github.com/andregrillo/outsystems-plugin-benefitpay.git
+   cordova plugin add https://github.com/harikrir/outsystems-plugin-benefitpay.git
    ```
 
 ## Usage
