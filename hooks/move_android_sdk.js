@@ -3,9 +3,9 @@ var fs = require('fs'), path = require('path');
 module.exports = function(ctx) {
     rootdir = ctx.opts.projectRoot,
     android_dir = path.join(ctx.opts.projectRoot, 'platforms/android');
-    sdk_file = path.join(ctx.opts.projectRoot, 'platforms/android/app/libs/benefitinappsdk-1.0.23.aar');
+    sdk_file = path.join(ctx.opts.projectRoot, 'platforms/android/app/libs/benefitinappsdk-1.0.28.aar');
     dest_sdk_folder = path.join(ctx.opts.projectRoot, 'platforms/android/libs');
-    dest_sdk_file = path.join(ctx.opts.projectRoot, 'platforms/android/libs/benefitinappsdk-1.0.23.aar');
+    dest_sdk_file = path.join(ctx.opts.projectRoot, 'platforms/android/libs/benefitinappsdk-1.0.28.aar');
 
     if(!fs.existsSync(sdk_file)){
         console.log(sdk_file + ' not found. Skipping');
