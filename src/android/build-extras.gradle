@@ -1,5 +1,5 @@
 ext.postBuildExtras = {
     dependencies {
-    implementation files('../app/libs/benefitinappsdk-1.0.23.aar')
+    implementation files('../app/libs/benefitinappsdk-1.0.28.aar')
     }
 }
