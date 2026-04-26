@@ -29,12 +29,12 @@
 		<hook type="before_plugin_install" src="hooks/install_prerequisites.js" />
 		<hook type="before_plugin_install" src="hooks/replace_callbackTag.js" />
 		
-	<!--	<edit-config target="LSApplicationQueriesSchemes" file="*-Info.plist" mode="merge">
+		<edit-config target="LSApplicationQueriesSchemes" file="*-Info.plist" mode="merge">
 		    <array>
 		        <string>benefitinapp</string>
 		    </array>
 		</edit-config>
--->
+
 		<config-file parent="/*" target="config.xml">
 			<feature name="BenefitPay">
 				<param name="ios-package" value="BenefitPay" />
