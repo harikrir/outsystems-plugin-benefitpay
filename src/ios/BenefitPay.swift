@@ -14,7 +14,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         super.pluginInitialize()
         // Add observer once when plugin loads
         NotificationCenter.default.addObserver(self, selector: #selector(handleCallBack(_:)), name: notificationName, object: nil)
-        print("[BenefitPay] Plugin initialized and observer added.")
+        NSLog("[BenefitPay] Plugin initialized and observer added.")
     }
     
     func bpInAppConfiguration() -> BPInAppConfiguration? {
@@ -24,7 +24,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     @objc(checkout:)
     func checkout(_ command: CDVInvokedUrlCommand){
         self.lastCommand = command
-        print("[BenefitPay] Checkout initiated...")
+        NSLog("[BenefitPay] Checkout initiated...")
         
         // Note: Your check says 10, but your error message says 11. 
         // I've kept it at 10 to match your current logic.
@@ -50,7 +50,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             
             self.checkoutConfiguration = BPInAppConfiguration(appId: appId, andSecretKey: andSecretKey, andAmount: andAmount, andCurrencyCode: andCurrencyCode, andMerchantId: andMerchantId, andMerchantName: andMerchantName, andMerchantCity: andMerchantCity, andCountryCode: andCountryCode, andMerchantCategoryId: andMerchantCategoryId, andReferenceId: andReferenceId, andCallBackTag: andCallBackTag)
             
-            print("[BenefitPay] Configuration set for Reference: \(andReferenceId)")
+            NSLog("[BenefitPay] Configuration set for Reference: \(andReferenceId)")
             
             self.bPButton = BPInAppButton()
             self.bPButton!.delegate = self
@@ -59,10 +59,10 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             DispatchQueue.main.async {
                 if let innerView = self.bPButton!.subviews.first, 
                    let button = innerView.subviews.first as? UIButton {
-                    print("[BenefitPay] Triggering SDK Button Click")
+                    NSLog("[BenefitPay] Triggering SDK Button Click")
                     button.sendActions(for: .touchUpInside)
                 } else {
-                    print("[BenefitPay] Error: Could not find internal SDK button")
+                    NSLog("[BenefitPay] Error: Could not find internal SDK button")
                 }
             }
             
@@ -72,17 +72,17 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     }
     
     @objc func handleCallBack(_ notification: Notification) {
-        print("[BenefitPay] Notification received in Swift observer")
+        NSLog("[BenefitPay] Notification received in Swift observer")
         
         guard let callbackInfo = notification.userInfo as? [String: Any] else {
-            print("[BenefitPay] Error: Notification userInfo is null or invalid")
+            NSLog("[BenefitPay] Error: Notification userInfo is null or invalid")
             return
         }
         
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: callbackInfo, options: [])
             if let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("[BenefitPay] Sending to Cordova: \(jsonString)")
+                NSLog("[BenefitPay] Sending to Cordova: \(jsonString)")
                 
                 let status = callbackInfo["status"] as? String
                 if status == "success" {
@@ -92,14 +92,14 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 }
             }
         } catch {
-            print("[BenefitPay] JSON Error: \(error.localizedDescription)")
+            NSLog("[BenefitPay] JSON Error: \(error.localizedDescription)")
             self.sendPluginResult(status: CDVCommandStatus_ERROR, message: "JSON Serialization failed")
         }
     }
     
     func sendPluginResult(status: CDVCommandStatus, message: String) {
         guard let command = self.lastCommand else { 
-            print("[BenefitPay] No command found to return result to.")
+            NSLog("[BenefitPay] No command found to return result to.")
             return 
         }
         let pluginResult = CDVPluginResult(status: status, messageAs: message)
