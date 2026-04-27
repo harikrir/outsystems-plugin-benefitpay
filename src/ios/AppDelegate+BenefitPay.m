@@ -1,9 +1,3 @@
-//
-//  AppDelegate+BenefitPay.m
-//
-//  Created by Andre Grillo on 23/05/2023.
-//
-
 #import "AppDelegate+BenefitPay.h"
 #import <objc/runtime.h>
 
@@ -17,54 +11,54 @@
     objc_setAssociatedObject(self, @selector(paymentCallback), paymentCallback, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options{
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    NSLog(@"[BenefitPay] Deep link received: %@", url.absoluteString);
+    
     self.paymentCallback = [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
     
-    NSString* statusString = [[NSString alloc] init];
+    if (!self.paymentCallback) {
+        NSLog(@"[BenefitPay] Error: Failed to initialize callback item from URL");
+        return NO;
+    }
+
+    NSString* statusString = @"unknown";
     PaymentCallBackStatus status = self.paymentCallback.status;
+    
     switch (status) {
         case PaymentCallBackStatusCancel:
-            // Handle cancel status
-            NSLog(@"Payment status is Cancel");
+            NSLog(@"[BenefitPay] Status: Cancelled");
             statusString = @"cancelled";
             break;
         case PaymentCallBackStatusSuccess:
-            // Handle success status
-            NSLog(@"Payment status is Success");
+            NSLog(@"[BenefitPay] Status: Success");
             statusString = @"success";
             break;
         case PaymentCallBackStatusFail:
-            // Handle fail status
-            NSLog(@"Payment status is Fail");
+            NSLog(@"[BenefitPay] Status: Failed");
             statusString = @"failed";
             break;
         default:
-            statusString = @"unknown";
+            NSLog(@"[BenefitPay] Status: Unknown (%ld)", (long)status);
             break;
     }
     
-    NSString *merchantName = (self.paymentCallback.merchantName == nil || self.paymentCallback.merchantName.length == 0) ? @"" : self.paymentCallback.merchantName;
-    NSString *cardNumber = (self.paymentCallback.cardNumber == nil || self.paymentCallback.cardNumber.length == 0) ? @"" : self.paymentCallback.cardNumber;
-    NSString *currency = (self.paymentCallback.currency == nil || self.paymentCallback.currency.length == 0) ? @"" : self.paymentCallback.currency;
-    NSString *currencyCode = (self.paymentCallback.currencyCode == nil || self.paymentCallback.currencyCode.length == 0) ? @"" : self.paymentCallback.currencyCode;
-    NSString *amount = (self.paymentCallback.amount == nil || self.paymentCallback.amount.length == 0) ? @"" : self.paymentCallback.amount;
-    NSString *message = (self.paymentCallback.message == nil || self.paymentCallback.message.length == 0) ? @"" : self.paymentCallback.message;
-    NSString *referenceId = (self.paymentCallback.referenceId == nil || self.paymentCallback.referenceId.length == 0) ? @"" : self.paymentCallback.referenceId;
+    // Helper to avoid nil values in dictionary
+    #define SafeString(str) (str == nil ? @"" : str)
     
     NSDictionary *userInfo = @{
         @"status": statusString,
-        @"merchantName": merchantName,
-        @"cardNumber": cardNumber,
-        @"currency": currency,
-        @"currencyCode": currencyCode,
-        @"amount": amount,
-        @"message": message,
-        @"referenceId": referenceId
+        @"merchantName": SafeString(self.paymentCallback.merchantName),
+        @"cardNumber": SafeString(self.paymentCallback.cardNumber),
+        @"currency": SafeString(self.paymentCallback.currency),
+        @"currencyCode": SafeString(self.paymentCallback.currencyCode),
+        @"amount": SafeString(self.paymentCallback.amount),
+        @"message": SafeString(self.paymentCallback.message),
+        @"referenceId": SafeString(self.paymentCallback.referenceId)
     };
 
+    NSLog(@"[BenefitPay] Posting notification: %@", kCallbackNotification);
     [[NSNotificationCenter defaultCenter] postNotificationName:kCallbackNotification object:nil userInfo:userInfo];
     
     return YES;
 }
-
 @end
