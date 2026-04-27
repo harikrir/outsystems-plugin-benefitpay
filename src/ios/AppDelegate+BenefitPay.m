@@ -1,11 +1,9 @@
-// AppDelegate+BenefitPay.m
-
 #import "AppDelegate+BenefitPay.h"
+#import "Constants.h"
 #import <objc/runtime.h>
 
 @implementation AppDelegate (BenefitPay)
 
-// Store callback object
 - (BPDLPaymentCallBackItem *)paymentCallback {
     return objc_getAssociatedObject(self, @selector(paymentCallback));
 }
@@ -19,35 +17,26 @@
     );
 }
 
-// Deep link callback from BenefitPay app
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+    NSLog(@"✅ BenefitPay openURL: %@", url.absoluteString);
+
     self.paymentCallback =
         [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
 
-    if (!self.paymentCallback) {
-        return NO;
-    }
+    if (!self.paymentCallback) return NO;
 
-    NSString *statusString = @"failed";
-
+    NSString *status = @"failed";
     switch (self.paymentCallback.status) {
-        case PaymentCallBackStatusSuccess:
-            statusString = @"success";
-            break;
-        case PaymentCallBackStatusCancel:
-            statusString = @"cancelled";
-            break;
-        case PaymentCallBackStatusFail:
-        default:
-            statusString = @"failed";
-            break;
+        case PaymentCallBackStatusSuccess: status = @"success"; break;
+        case PaymentCallBackStatusCancel:  status = @"cancelled"; break;
+        default:                           status = @"failed"; break;
     }
 
     NSDictionary *userInfo = @{
-        @"status": statusString,
+        @"status": status,
         @"merchantName": self.paymentCallback.merchantName ?: @"",
         @"cardNumber": self.paymentCallback.cardNumber ?: @"",
         @"currency": self.paymentCallback.currency ?: @"",
