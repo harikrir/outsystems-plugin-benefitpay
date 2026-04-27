@@ -6,7 +6,8 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     var checkoutConfiguration: BPInAppConfiguration?
     var lastCommand: CDVInvokedUrlCommand? // Renamed to avoid confusion
     var bPButton: BPInAppButton?
-    
+
+    let logger = Logger(subsystem: "com.aub.benefitpay", category: "Plugin")
     // Constant string must match Objective-C: "CallbackNotification"
     let notificationName = Notification.Name("CallbackNotification")
     
@@ -14,7 +15,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         super.pluginInitialize()
         // Add observer once when plugin loads
         NotificationCenter.default.addObserver(self, selector: #selector(handleCallBack(_:)), name: notificationName, object: nil)
-        NSLog("[BenefitPay] Plugin initialized and observer added.")
+        logger.log("[BenefitPay] Plugin initialized and observer added.")
     }
     
     func bpInAppConfiguration() -> BPInAppConfiguration? {
@@ -24,7 +25,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     @objc(checkout:)
     func checkout(_ command: CDVInvokedUrlCommand){
         self.lastCommand = command
-        NSLog("[BenefitPay] Checkout initiated...")
+        logger.log("[BenefitPay] Checkout initiated...")
         
         // Note: Your check says 10, but your error message says 11. 
         // I've kept it at 10 to match your current logic.
@@ -50,7 +51,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             
             self.checkoutConfiguration = BPInAppConfiguration(appId: appId, andSecretKey: andSecretKey, andAmount: andAmount, andCurrencyCode: andCurrencyCode, andMerchantId: andMerchantId, andMerchantName: andMerchantName, andMerchantCity: andMerchantCity, andCountryCode: andCountryCode, andMerchantCategoryId: andMerchantCategoryId, andReferenceId: andReferenceId, andCallBackTag: andCallBackTag)
             
-            NSLog("[BenefitPay] Configuration set for Reference: \(andReferenceId)")
+            logger.log("[BenefitPay] Configuration set for Reference: \(andReferenceId)")
             
             self.bPButton = BPInAppButton()
             self.bPButton!.delegate = self
@@ -59,10 +60,10 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             DispatchQueue.main.async {
                 if let innerView = self.bPButton!.subviews.first, 
                    let button = innerView.subviews.first as? UIButton {
-                    NSLog("[BenefitPay] Triggering SDK Button Click")
+                    logger.log("[BenefitPay] Triggering SDK Button Click")
                     button.sendActions(for: .touchUpInside)
                 } else {
-                    NSLog("[BenefitPay] Error: Could not find internal SDK button")
+                    logger.log("[BenefitPay] Error: Could not find internal SDK button")
                 }
             }
             
@@ -72,17 +73,17 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     }
     
     @objc func handleCallBack(_ notification: Notification) {
-        NSLog("[BenefitPay] Notification received in Swift observer")
+        logger.log("[BenefitPay] Notification received in Swift observer")
         
         guard let callbackInfo = notification.userInfo as? [String: Any] else {
-            NSLog("[BenefitPay] Error: Notification userInfo is null or invalid")
+            logger.log("[BenefitPay] Error: Notification userInfo is null or invalid")
             return
         }
         
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: callbackInfo, options: [])
             if let jsonString = String(data: jsonData, encoding: .utf8) {
-                NSLog("[BenefitPay] Sending to Cordova: \(jsonString)")
+                logger.log("[BenefitPay] Sending to Cordova: \(jsonString)")
                 
                 let status = callbackInfo["status"] as? String
                 if status == "success" {
@@ -92,14 +93,14 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 }
             }
         } catch {
-            NSLog("[BenefitPay] JSON Error: \(error.localizedDescription)")
+            logger.log("[BenefitPay] JSON Error: \(error.localizedDescription)")
             self.sendPluginResult(status: CDVCommandStatus_ERROR, message: "JSON Serialization failed")
         }
     }
     
     func sendPluginResult(status: CDVCommandStatus, message: String) {
         guard let command = self.lastCommand else { 
-            NSLog("[BenefitPay] No command found to return result to.")
+            logger.log("[BenefitPay] No command found to return result to.")
             return 
         }
         let pluginResult = CDVPluginResult(status: status, messageAs: message)
