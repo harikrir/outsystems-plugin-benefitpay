@@ -40,7 +40,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                 let andCallBackTag = "com.aub.mobilebanking.uat.bh".lowercased()
                 
                 //Set the callback observer
-                NotificationCenter.default.addObserver(self, selector: #selector(handleCallBack(_:)), name: NSNotification.Name(rawValue: "CallbackNotification"), object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(handleCallBack(_:)), name: NSNotification.Name(rawValue: "kCallbackNotification"), object: nil)
                 
                 self.checkoutConfiguration = BPInAppConfiguration(appId: appId, andSecretKey: andSecretKey, andAmount: andAmount, andCurrencyCode: andCurrencyCode, andMerchantId: andMerchantId, andMerchantName: andMerchantName, andMerchantCity: andMerchantCity, andCountryCode: andCountryCode, andMerchantCategoryId: andMerchantCategoryId, andReferenceId: andReferenceId, andCallBackTag: andCallBackTag)
                 
