@@ -46,7 +46,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
            let andMerchantCategoryId = command.arguments[8] as? String,
            let andReferenceId = command.arguments[9] as? String {
             
-            let andCallBackTag = "com.outsystems.experts.BenefitPay".lowercased()
+            let andCallBackTag = "com.aub.mobilebanking.uat.bh".lowercased()
             
             self.checkoutConfiguration = BPInAppConfiguration(appId: appId, andSecretKey: andSecretKey, andAmount: andAmount, andCurrencyCode: andCurrencyCode, andMerchantId: andMerchantId, andMerchantName: andMerchantName, andMerchantCity: andMerchantCity, andCountryCode: andCountryCode, andMerchantCategoryId: andMerchantCategoryId, andReferenceId: andReferenceId, andCallBackTag: andCallBackTag)
             
