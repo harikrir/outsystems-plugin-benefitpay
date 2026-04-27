@@ -46,8 +46,12 @@
 		<config-file parent="/*" target="config.xml">
 			<feature name="BenefitPay">
 				<param name="ios-package" value="BenefitPay" />
+				 <param name="onload" value="true" />
 			</feature>
 		</config-file>
+
+		
+		
 		<source-file src="src/ios/BenefitPay.swift" />
 		<header-file src="src/ios/AppDelegate+BenefitPay.h" />
 		<source-file src="src/ios/AppDelegate+BenefitPay.m" />
