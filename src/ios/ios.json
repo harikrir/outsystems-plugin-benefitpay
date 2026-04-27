@@ -1,0 +1,7 @@
+{
+  "bridge": {
+    "headers": [
+      "Constants.h"
+    ]
+  }
+}
