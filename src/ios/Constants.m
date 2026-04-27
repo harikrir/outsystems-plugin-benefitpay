@@ -1,4 +1,9 @@
+//
+//  Constants.m
+//
+//  Created by Andre Grillo on 22/05/2023.
+//
+
 #import "Constants.h"
 
-// MUST match Swift exactly via bridging
-NSString * const kCallbackNotification = @"CallbackNotification";
+NSString *const kCallbackNotification = @"CallbackNotification";
