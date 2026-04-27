@@ -133,7 +133,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         _ keep: Bool
     ) {
         let result = CDVPluginResult(status: status, messageAs: message)
-        result?.keepCallback = keep
+       result?.keepCallback = NSNumber(value: keep)
         if let callbackId = command?.callbackId {
             commandDelegate.send(result, callbackId: callbackId)
         }
