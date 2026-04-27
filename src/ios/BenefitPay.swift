@@ -1,5 +1,6 @@
 import Foundation
 import BenefitInAppSDK
+import NotificationCenter
 
 // MUST match Constants.m exactly
 public let kNotification =
