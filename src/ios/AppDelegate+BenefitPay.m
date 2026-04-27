@@ -1,7 +1,15 @@
 #import "AppDelegate+BenefitPay.h"
 #import <objc/runtime.h>
+#import <os/log.h> // Required for modern logging
 
 @implementation AppDelegate (BenefitPay)
+
+// Define a log category for easy filtering in Console.app
+static os_log_t benefit_log;
+
++ (void)load {
+    benefit_log = os_log_create("com.aub.benefitpay", "AppDelegate");
+}
 
 - (BPDLPaymentCallBackItem *)paymentCallback {
     return objc_getAssociatedObject(self, @selector(paymentCallback));
@@ -12,12 +20,13 @@
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    NSLog(@"[BenefitPay] Deep link received: %@", url.absoluteString);
+    // Public logging ensures the URL is not redacted in the console
+    os_log(benefit_log, "Deep link received: %{public}@", url.absoluteString);
     
     self.paymentCallback = [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
     
     if (!self.paymentCallback) {
-        NSLog(@"[BenefitPay] Error: Failed to initialize callback item from URL");
+        os_log_error(benefit_log, "Error: Failed to initialize callback item from URL");
         return NO;
     }
 
@@ -26,23 +35,22 @@
     
     switch (status) {
         case PaymentCallBackStatusCancel:
-            NSLog(@"[BenefitPay] Status: Cancelled");
+            os_log(benefit_log, "Status: Cancelled");
             statusString = @"cancelled";
             break;
         case PaymentCallBackStatusSuccess:
-            NSLog(@"[BenefitPay] Status: Success");
+            os_log(benefit_log, "Status: Success");
             statusString = @"success";
             break;
         case PaymentCallBackStatusFail:
-            NSLog(@"[BenefitPay] Status: Failed");
+            os_log_error(benefit_log, "Status: Failed");
             statusString = @"failed";
             break;
         default:
-            NSLog(@"[BenefitPay] Status: Unknown (%ld)", (long)status);
+            os_log_error(benefit_log, "Status: Unknown (%ld)", (long)status);
             break;
     }
     
-    // Helper to avoid nil values in dictionary
     #define SafeString(str) (str == nil ? @"" : str)
     
     NSDictionary *userInfo = @{
@@ -56,7 +64,7 @@
         @"referenceId": SafeString(self.paymentCallback.referenceId)
     };
 
-    NSLog(@"[BenefitPay] Posting notification: %@", kCallbackNotification);
+    os_log(benefit_log, "Posting internal notification: %{public}@", kCallbackNotification);
     [[NSNotificationCenter defaultCenter] postNotificationName:kCallbackNotification object:nil userInfo:userInfo];
     
     return YES;
