@@ -1,5 +1,6 @@
 import Foundation
 import BenefitInAppSDK
+import os
 
 @objc(BenefitPay)
 class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
