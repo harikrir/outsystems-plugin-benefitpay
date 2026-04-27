@@ -8,7 +8,7 @@ import Foundation
 import BenefitInAppSDK
 import NotificationCenter
 
-public let kNotification = Notification.Name("CallbackNotification")
+public let kNotification = Notification.Name("kCallbackNotification")
 
 @objc(BenefitPay)
 class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
