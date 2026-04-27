@@ -17,6 +17,7 @@
     );
 }
 
+// ✅ Deep‑link callback from BenefitPay app
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
@@ -26,13 +27,22 @@
     self.paymentCallback =
         [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
 
-    if (!self.paymentCallback) return NO;
+    if (!self.paymentCallback) {
+        return NO;
+    }
 
     NSString *status = @"failed";
+
     switch (self.paymentCallback.status) {
-        case PaymentCallBackStatusSuccess: status = @"success"; break;
-        case PaymentCallBackStatusCancel:  status = @"cancelled"; break;
-        default:                           status = @"failed"; break;
+        case PaymentCallBackStatusSuccess:
+            status = @"success";
+            break;
+        case PaymentCallBackStatusCancel:
+            status = @"cancelled";
+            break;
+        default:
+            status = @"failed";
+            break;
     }
 
     NSDictionary *userInfo = @{
@@ -46,6 +56,7 @@
         @"referenceId": self.paymentCallback.referenceId ?: @""
     };
 
+    // ✅ Post notification for Swift plugin
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kCallbackNotification
                       object:nil
