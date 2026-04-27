@@ -2,9 +2,9 @@ import Foundation
 import BenefitInAppSDK
 import NotificationCenter
 
-// MUST match Constants.m exactly
+// ✅ MUST use Obj‑C constant via bridging
 public let kNotification =
-    Notification.Name("CallbackNotification")
+    Notification.Name(kCallbackNotification)
 
 @objc(BenefitPay)
 class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
@@ -13,12 +13,10 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     private var command: CDVInvokedUrlCommand?
     private var bpButton: BPInAppButton?
 
-    // SDK config provider
     func bpInAppConfiguration() -> BPInAppConfiguration? {
-        return checkoutConfiguration
+        checkoutConfiguration
     }
 
-    // Cordova entry
     @objc(checkout:)
     func checkout(_ command: CDVInvokedUrlCommand) {
 
@@ -45,9 +43,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             return
         }
 
-        let callbackTag = "com.aub.mobilebanking.uat.bh"
-
-        // Observe AppDelegate callback
+        // ✅ Listen for AppDelegate callback
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleCallback(_:)),
@@ -66,39 +62,29 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             andCountryCode: countryCode,
             andMerchantCategoryId: mcc,
             andReferenceId: referenceId,
-            andCallBackTag: callbackTag
+            andCallBackTag: "com.aub.mobilebanking.uat.bh"
         )
 
         bpButton = BPInAppButton()
         bpButton?.delegate = self
 
-        // IMPORTANT: keep callback alive
-      //  sendSuccess("{\"status\":\"initiated\"}", keep: true)
-         // ✅ IMPORTANT FIX:
-        // Do NOT send success or error now.
-        // Tell Cordova: "I will respond later"
-        let pluginResult = CDVPluginResult(
-            status: CDVCommandStatus.noResult
-        )
-        pluginResult?.keepCallback = NSNumber(value: true)
+        // ✅ Keep Cordova callback alive
+        let pluginResult = CDVPluginResult(status: .noResult)
+        pluginResult?.keepCallback = true
+        commandDelegate.send(pluginResult,
+                             callbackId: command.callbackId)
 
-        if let callbackId = command.callbackId {
-            commandDelegate.send(pluginResult, callbackId: callbackId)
-        }
-
-        DispatchQueue.main.async {
-            guard
-                let button =
-                    self.bpButton?
-                        .subviews.first?
-                        .subviews.first as? UIButton
-            else { return }
-
-            button.sendActions(for: .touchUpInside)
+        // ✅ Safely trigger SDK button
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            for view in self.bpButton?.subviews ?? [] {
+                if let button = view as? UIButton {
+                    button.sendActions(for: .touchUpInside)
+                }
+            }
         }
     }
 
-    // Receive callback from AppDelegate
+    // ✅ Receive callback
     @objc func handleCallback(_ notification: Notification) {
 
         NotificationCenter.default.removeObserver(
@@ -113,40 +99,34 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         }
 
         do {
-            let data = try JSONSerialization.data(withJSONObject: info)
-            let json = String(data: data, encoding: .utf8) ?? "{}"
+            let data =
+                try JSONSerialization.data(withJSONObject: info)
+            let json =
+                String(data: data, encoding: .utf8) ?? "{}"
 
-            if info["status"] as? String == "success" {
-                sendSuccess(json)
-            } else {
-                sendError(json, raw: true)
-            }
+            let status = info["status"] as? String ?? "failed"
+            send(status == "success" ? .ok : .error, json)
+
         } catch {
-            sendError("Failed to parse callback")
+            sendError("JSON parse error")
         }
     }
 
-    // Helpers
-    private func sendSuccess(_ msg: String, keep: Bool = false) {
-        send(.ok, msg, keep)
-    }
-
-    private func sendError(_ msg: String, raw: Bool = false) {
-        let payload = raw
-            ? msg
-            : "{\"status\":\"failed\",\"message\":\"\(msg)\"}"
-        send(.error, payload, false)
+    private func sendError(_ message: String) {
+        let payload =
+          "{\"status\":\"failed\",\"message\":\"\(message)\"}"
+        send(.error, payload)
     }
 
     private func send(
         _ status: CDVCommandStatus,
-        _ message: String,
-        _ keep: Bool
+        _ payload: String
     ) {
-        let result = CDVPluginResult(status: status, messageAs: message)
-       result?.keepCallback = NSNumber(value: keep)
-        if let callbackId = command?.callbackId {
-            commandDelegate.send(result, callbackId: callbackId)
-        }
+        let result =
+            CDVPluginResult(status: status,
+                            messageAs: payload)
+        result?.keepCallback = false
+        commandDelegate.send(result,
+                             callbackId: command?.callbackId)
     }
 }
