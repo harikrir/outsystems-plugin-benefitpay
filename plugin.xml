@@ -53,8 +53,9 @@
 		<source-file src="src/ios/AppDelegate+BenefitPay.m" />
 		<header-file src="src/ios/Constants.h" />
 		<source-file src="src/ios/Constants.m" />
-		<header-file src="src/ios/BridgingHeader.h" type="BridgingHeader" />
+		
 		
 		<framework src="src/ios/framework/BenefitInAppSDK.framework" embed="true" custom="true" />
+		<header-file src="src/ios/BridgingHeader.h" type="BridgingHeader" />
 	</platform>
 </plugin>
