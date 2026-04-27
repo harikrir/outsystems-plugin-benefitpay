@@ -73,7 +73,18 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         bpButton?.delegate = self
 
         // IMPORTANT: keep callback alive
-        sendSuccess("{\"status\":\"initiated\"}", keep: true)
+      //  sendSuccess("{\"status\":\"initiated\"}", keep: true)
+         // ✅ IMPORTANT FIX:
+        // Do NOT send success or error now.
+        // Tell Cordova: "I will respond later"
+        let pluginResult = CDVPluginResult(
+            status: CDVCommandStatus.noResult
+        )
+        pluginResult?.keepCallback = NSNumber(value: true)
+
+        if let callbackId = command.callbackId {
+            commandDelegate.send(pluginResult, callbackId: callbackId)
+        }
 
         DispatchQueue.main.async {
             guard
