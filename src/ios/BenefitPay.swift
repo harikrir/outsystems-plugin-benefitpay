@@ -146,7 +146,9 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         }
 
         let pluginResult = CDVPluginResult(status: status, messageAs: message)
-        pluginResult?.keepCallback = keepCallback
+         if keepCallback {
+        pluginResult?.setKeepCallbackAs(true)
+    }
 
         self.commandDelegate?.send(pluginResult, callbackId: command.callbackId)
     }
