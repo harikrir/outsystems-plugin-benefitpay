@@ -26,10 +26,14 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
 
         NSLog("✅ [BenefitPay] Notification observer REGISTERED")
 
-        // 🔁 IMPORTANT: Replay callback if app was reopened from BenefitPay
+        // ✅ OutSystems / Cordova SAFE:
+        // Do NOT cast to AppDelegate (Swift cannot see it).
+        // Use Objective‑C runtime (KVC).
         if
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-            let item = appDelegate.paymentCallback
+            let appDelegate = UIApplication.shared.delegate as? NSObject,
+            let item =
+                appDelegate.value(forKey: "paymentCallback")
+                    as? BPDLPaymentCallBackItem
         {
             NSLog("✅ [BenefitPay] Cached callback FOUND — replaying")
 
@@ -136,7 +140,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             return
         }
 
-        NSLog("✅ [BenefitPay] Triggering BenefitPay flow")
+        NSLog("✅ [BenefitPay] Launching BenefitPay flow")
 
         DispatchQueue.main.async {
             uiButton.sendActions(for: .touchUpInside)
@@ -146,7 +150,6 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     // MARK: - Callback handling
 
     @objc private func handleCallback(_ notification: Notification) {
-
         NSLog("✅✅ [BenefitPay] handleCallback TRIGGERED")
 
         guard let payload = notification.userInfo else {
@@ -164,26 +167,26 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             let status =
                 (payload["status"] as? String)?.lowercased() ?? "failed"
 
-            NSLog("✅ [BenefitPay] Payment status: \(status)")
+            NSLog("✅ [BenefitPay] Final payment status: \(status)")
 
-            if status == "success" {
-                sendResult(.ok, json)
-            } else {
-                sendResult(.error, json)
-            }
+            sendResult(
+                status == "success" ? .ok : .error,
+                json
+            )
         } catch {
             NSLog("❌ [BenefitPay] JSON serialization FAILED")
             sendError("JSON serialization error")
         }
     }
 
-    // MARK: - JS result helpers
+    // MARK: - JS helpers
 
     private func sendError(_ message: String) {
         NSLog("❌ [BenefitPay] sendError: \(message)")
-        let json =
+        sendResult(
+            .error,
             "{\"status\":\"failed\",\"message\":\"\(message)\"}"
-        sendResult(.error, json)
+        )
     }
 
     private func sendResult(
@@ -198,9 +201,6 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         NSLog("✅ [BenefitPay] Sending result to JS")
         let result =
             CDVPluginResult(status: status, messageAs: message)
-        commandDelegate.send(
-            result,
-            callbackId: command.callbackId
-        )
+        commandDelegate.send(result, callbackId: command.callbackId)
     }
 }
