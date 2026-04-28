@@ -102,9 +102,9 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
               (payload["status"] as? String)?.lowercased() ?? "failed"
 
             if status == "success" {
-                sendResult(.OK, json)
+                sendResult(.ok, json)
             } else {
-                sendResult(.ERROR, json)
+                sendResult(.error, json)
             }
 
         } catch {
@@ -116,7 +116,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         let payload = """
         {"status":"failed","message":"\(message)"}
         """
-        sendResult(.ERROR, payload)
+        sendResult(.error, payload)
     }
 
     private func sendResult(_ status: CDVCommandStatus, _ message: String) {
