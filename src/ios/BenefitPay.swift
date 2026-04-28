@@ -124,4 +124,4 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         )
     }
 }
-``
+
