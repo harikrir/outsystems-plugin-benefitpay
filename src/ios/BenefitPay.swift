@@ -18,8 +18,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     var command: CDVInvokedUrlCommand?
     var bPButton: BPInAppButton?
 
-    // ✅ Create a Logger instance with a searchable subsystem
-    let logger = Logger(subsystem: "com.aub.benefitpay", category: "Plugin")
+
 
     func bpInAppConfiguration() -> BPInAppConfiguration? {
         return checkoutConfiguration
@@ -41,7 +40,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     func checkout(_ command: CDVInvokedUrlCommand) {
 
         self.command = command
-        logger.info("Checking out...")
+        AUBLog.plugin.error("Checking out...")
 
         if command.arguments.count == 10 {
 
@@ -77,7 +76,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
 
                 guard let innerView = bPButton!.subviews.first,
                       let button = innerView.subviews.first as? UIButton else {
-                    logger.info("❌ Button creation failed")
+                     AUBLog.plugin.error("❌ Button creation failed")
                     return
                 }
 
@@ -100,7 +99,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     // MARK: - Callback handler
     @objc func handleCallBack(_ notification: Notification) {
 
-        logger.info("📩 Callback received")
+         AUBLog.plugin.error("📩 Callback received")
 
         guard let callbackInfo = notification.userInfo as? [String: Any] else {
             let message = "{\"status\": \"failed\", \"message\": \"Invalid callback object\"}"
@@ -112,7 +111,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             let jsonData = try JSONSerialization.data(withJSONObject: callbackInfo, options: [])
             let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
 
-            logger.info("✅ Callback JSON: \(jsonString)")
+             AUBLog.plugin.error("✅ Callback JSON: \(jsonString)")
 
             DispatchQueue.main.async {
 
@@ -145,7 +144,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                           keepCallback: Bool = false) {
 
         guard let command = self.command else {
-            logger.info("❌ No command available")
+             AUBLog.plugin.error("❌ No command available")
             return
         }
 
