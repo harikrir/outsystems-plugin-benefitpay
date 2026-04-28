@@ -74,6 +74,6 @@
 		<source-file src="src/ios/SceneDelegate.m" />
 		
 		<framework src="src/ios/framework/BenefitInAppSDK.framework" embed="true" custom="true" />
-		<header-file src="src/ios/BridgingHeader.h" type="BridgingHeader" />
+	
 	</platform>
 </plugin>
