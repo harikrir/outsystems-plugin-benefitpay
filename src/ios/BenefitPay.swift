@@ -7,19 +7,10 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     private var checkoutConfiguration: BPInAppConfiguration?
     private var command: CDVInvokedUrlCommand?
     private var button: BPInAppButton?
+    private let notificationName = NSNotification.Name("BenefitPayCallbackNotification")
 
-    override func pluginInitialize() {
-        // Register observer for the AppDelegate notification
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleCallback(_:)),
-            name: NSNotification.Name("BenefitPayCallbackNotification"),
-            object: nil
-        )
-    }
-
-    [span_3](start_span)// SDK Delegate Method[span_3](end_span)
-    func bpInAppConfiguration() -> BPInAppConfiguration? {
+    // MARK: - SDK Delegate Method
+    @objc func bpInAppConfiguration() -> BPInAppConfiguration? {
         return checkoutConfiguration
     }
 
@@ -32,11 +23,20 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             return
         }
 
-        [span_4](start_span)[span_5](start_span)// 1. Set the CallBackTag (SCHEME ONLY)[span_4](end_span)[span_5](end_span)
-        // Do NOT include :// or paths here.
+        // 1. Clean up any existing observer before starting a new session
+        NotificationCenter.default.removeObserver(self, name: notificationName, object: nil)
+
+        // 2. Add observer specifically for this checkout session
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleCallback(_:)),
+            name: notificationName,
+            object: nil
+        )
+
         let callbackTag = "com.aub.mobilebanking.uat.bh"
 
-        [span_6](start_span)// 2. Initialize Configuration[span_6](end_span)
+        // 3. Initialize Configuration
         checkoutConfiguration = BPInAppConfiguration(
             appId: args[0] as? String ?? "",
             andSecretKey: args[1] as? String ?? "",
@@ -51,12 +51,11 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             andCallBackTag: callbackTag
         )
 
-        // 3. Trigger the payment flow
+        // 4. Trigger the payment flow
         DispatchQueue.main.async {
             self.button = BPInAppButton()
             self.button?.delegate = self
             
-            [span_7](start_span)// Access the internal button safely[span_7](end_span)
             if let uiButton = self.button?.subviews.first?.subviews.first as? UIButton {
                 uiButton.sendActions(for: .touchUpInside)
             } else {
@@ -66,6 +65,9 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     }
 
     @objc private func handleCallback(_ notification: Notification) {
+        // Stop listening once we receive a result
+        NotificationCenter.default.removeObserver(self, name: notificationName, object: nil)
+
         guard let payload = notification.userInfo else { return }
 
         let status = (payload["status"] as? String) ?? "fail"
@@ -81,17 +83,16 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     }
 
     private func sendError(_ message: String) {
+        // Also remove observer on immediate errors
+        NotificationCenter.default.removeObserver(self, name: notificationName, object: nil)
         let errorJson = "{\"status\":\"fail\",\"message\":\"\(message)\"}"
         sendResult(.error, errorJson)
     }
 
     private func sendResult(_ status: CDVCommandStatus, _ message: String) {
         guard let command = self.command else { return }
-        
         let result = CDVPluginResult(status: status, messageAs: message)
-        // Set to false to clean up the command after the transaction finishes
         result?.setKeepCallbackAs(false)
-        
         self.commandDelegate.send(result, callbackId: command.callbackId)
         self.command = nil 
     }
