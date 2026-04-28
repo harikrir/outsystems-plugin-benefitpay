@@ -7,6 +7,7 @@
 import Foundation
 import BenefitInAppSDK
 import NotificationCenter
+import os
 
 public let kNotification = Notification.Name("kCallbackNotification")
 
@@ -16,6 +17,9 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     var checkoutConfiguration: BPInAppConfiguration?
     var command: CDVInvokedUrlCommand?
     var bPButton: BPInAppButton?
+
+    // ✅ Create a Logger instance with a searchable subsystem
+    let logger = Logger(subsystem: "com.aub.benefitpay", category: "Plugin")
 
     func bpInAppConfiguration() -> BPInAppConfiguration? {
         return checkoutConfiguration
@@ -37,7 +41,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     func checkout(_ command: CDVInvokedUrlCommand) {
 
         self.command = command
-        print("Checking out...")
+        logger.info("Checking out...")
 
         if command.arguments.count == 10 {
 
@@ -73,7 +77,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
 
                 guard let innerView = bPButton!.subviews.first,
                       let button = innerView.subviews.first as? UIButton else {
-                    print("❌ Button creation failed")
+                    logger.info("❌ Button creation failed")
                     return
                 }
 
@@ -96,7 +100,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     // MARK: - Callback handler
     @objc func handleCallBack(_ notification: Notification) {
 
-        print("📩 Callback received")
+        logger.info("📩 Callback received")
 
         guard let callbackInfo = notification.userInfo as? [String: Any] else {
             let message = "{\"status\": \"failed\", \"message\": \"Invalid callback object\"}"
@@ -108,7 +112,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             let jsonData = try JSONSerialization.data(withJSONObject: callbackInfo, options: [])
             let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
 
-            print("✅ Callback JSON: \(jsonString)")
+            logger.info("✅ Callback JSON: \(jsonString)")
 
             DispatchQueue.main.async {
 
@@ -141,7 +145,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                           keepCallback: Bool = false) {
 
         guard let command = self.command else {
-            print("❌ No command available")
+            logger.info("❌ No command available")
             return
         }
 
