@@ -28,12 +28,23 @@ static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-    if (!url) return NO;
+    NSLog(@"✅ [BenefitPay] openURL received: %@", url.absoluteString);
+
+    if (!url) {
+        NSLog(@"❌ [BenefitPay] URL is nil");
+        return YES; // ✅ NEVER return NO in Cordova
+    }
 
     BPDLPaymentCallBackItem *item =
         [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
 
-    if (!item) return NO;
+    if (!item) {
+        NSLog(@"❌ [BenefitPay] SDK did NOT recognize callback URL");
+        NSLog(@"❌ [BenefitPay] Raw URL = %@", url.absoluteString);
+        return YES; // ✅ CRITICAL for Cordova
+    }
+
+    NSLog(@"✅ [BenefitPay] Callback parsed successfully");
 
     self.paymentCallback = item;
 
@@ -55,12 +66,14 @@ static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
         @"referenceId": item.referenceId ?: @""
     };
 
+    NSLog(@"✅ [BenefitPay] Posting callback notification");
+
     [[NSNotificationCenter defaultCenter]
         postNotificationName:BenefitPayCallbackNotification
                       object:nil
                     userInfo:payload];
 
-    return YES;
+    return YES; // ✅ ALWAYS YES
 }
 
 @end
