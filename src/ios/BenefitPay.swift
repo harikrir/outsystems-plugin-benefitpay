@@ -11,7 +11,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     override func pluginInitialize() {
         NSLog("🔥🔥🔥 BenefitPay pluginInitialize")
         print("🔥 PRINT pluginInitialize")
-        fprintf(stderr, "🔥 STDERR pluginInitialize\n")
+      
 
         NotificationCenter.default.addObserver(
             self,
