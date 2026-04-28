@@ -11,7 +11,6 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     private let callbackNotification =
         Notification.Name("BenefitPayCallbackNotification")
 
-    // ✅ Called once when plugin loads
     override func pluginInitialize() {
         NotificationCenter.default.addObserver(
             self,
@@ -21,12 +20,10 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         )
     }
 
-    // ✅ Required by Benefit SDK
     func bpInAppConfiguration() -> BPInAppConfiguration? {
         return checkoutConfiguration
     }
 
-    // ✅ Called from JS
     @objc(checkout:)
     func checkout(_ command: CDVInvokedUrlCommand) {
 
@@ -53,7 +50,6 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             return
         }
 
-        // ✅ MUST MATCH Info.plist URL Scheme
         let callbackTag = "com.aub.mobilebanking.uat.bh"
 
         checkoutConfiguration = BPInAppConfiguration(
@@ -86,9 +82,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         }
     }
 
-    // ✅ Receive callback from AppDelegate
     @objc private func handleCallback(_ notification: Notification) {
-
         guard let payload = notification.userInfo else {
             sendError("Invalid callback payload")
             return
@@ -99,30 +93,35 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             let json = String(data: data, encoding: .utf8) ?? "{}"
 
             let status =
-              (payload["status"] as? String)?.lowercased() ?? "failed"
+                (payload["status"] as? String)?.lowercased() ?? "failed"
 
             if status == "success" {
                 sendResult(.ok, json)
             } else {
                 sendResult(.error, json)
             }
-
         } catch {
             sendError("JSON serialization error")
         }
     }
 
     private func sendError(_ message: String) {
-        let payload = """
-        {"status":"failed","message":"\(message)"}
-        """
-        sendResult(.error, payload)
+        let json =
+            "{\"status\":\"failed\",\"message\":\"\(message)\"}"
+        sendResult(.error, json)
     }
 
-    private func sendResult(_ status: CDVCommandStatus, _ message: String) {
+    private func sendResult(
+        _ status: CDVCommandStatus,
+        _ message: String
+    ) {
         guard let command = command else { return }
-        let result = CDVPluginResult(status: status, messageAs: message)
-        commandDelegate.send(result, callbackId: command.callbackId)
+        let result =
+            CDVPluginResult(status: status, messageAs: message)
+        commandDelegate.send(
+            result,
+            callbackId: command.callbackId
+        )
     }
 }
-
+``
