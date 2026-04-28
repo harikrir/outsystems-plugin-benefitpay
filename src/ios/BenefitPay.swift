@@ -111,7 +111,7 @@ default:
         }
 
         // MUST exactly match Info.plist URL scheme
-        let callbackTag = "com.aub.mobilebanking.uat.bh"
+        let callbackTag = "com.aub.mobilebanking.uat.bh://MobileBanking_Bahrain/FundMyAccount"
         NSLog("✅ [BenefitPay] Using callbackTag: \(callbackTag)")
 
         checkoutConfiguration = BPInAppConfiguration(
