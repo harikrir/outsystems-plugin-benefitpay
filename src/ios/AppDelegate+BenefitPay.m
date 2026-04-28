@@ -2,6 +2,13 @@
 #import <BenefitInAppSDK/BenefitInAppSDK.h>
 #import <objc/runtime.h>
 
+// ✅ THIS MUST PRINT
+__attribute__((constructor))
+static void BenefitPayLoaded(void) {
+    NSLog(@"🔥🔥🔥 AppDelegate+BenefitPay LOADED");
+    fprintf(stderr, "🔥 STDERR AppDelegate+BenefitPay LOADED\n");
+}
+
 NSString * const BenefitPayCallbackNotification =
     @"BenefitPayCallbackNotification";
 
@@ -9,8 +16,7 @@ NSString * const BenefitPayCallbackNotification =
 
 static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
 
-- (void)setPaymentCallback:(BPDLPaymentCallBackItem *)paymentCallback
-{
+- (void)setPaymentCallback:(BPDLPaymentCallBackItem *)paymentCallback {
     objc_setAssociatedObject(
         self,
         kPaymentCallbackKey,
@@ -19,8 +25,7 @@ static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
     );
 }
 
-- (BPDLPaymentCallBackItem *)paymentCallback
-{
+- (BPDLPaymentCallBackItem *)paymentCallback {
     return objc_getAssociatedObject(self, kPaymentCallbackKey);
 }
 
@@ -28,31 +33,27 @@ static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-    NSLog(@"✅ [BenefitPay] openURL received: %@", url.absoluteString);
+    NSLog(@"✅✅✅ openURL HIT");
+    NSLog(@"✅ RAW URL: %@", url.absoluteString);
 
-    if (!url) {
-        NSLog(@"❌ [BenefitPay] URL is nil");
-        return YES; // ✅ NEVER return NO in Cordova
-    }
+    if (!url) return YES;
 
     BPDLPaymentCallBackItem *item =
-        [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
+        [[BPDLPaymentCallBackItem alloc]
+            initWithDeepLinkURL:url];
 
     if (!item) {
-        NSLog(@"❌ [BenefitPay] SDK did NOT recognize callback URL");
-        NSLog(@"❌ [BenefitPay] Raw URL = %@", url.absoluteString);
-        return YES; // ✅ CRITICAL for Cordova
+        NSLog(@"❌ SDK did not parse URL");
+        return YES;
     }
-
-    NSLog(@"✅ [BenefitPay] Callback parsed successfully");
 
     self.paymentCallback = item;
 
-    NSString *status = @"failed";
+    NSString *status = @"fail";
     if (item.status == PaymentCallBackStatusSuccess) {
         status = @"success";
     } else if (item.status == PaymentCallBackStatusCancel) {
-        status = @"cancelled";
+        status = @"cancel";
     }
 
     NSDictionary *payload = @{
@@ -66,14 +67,12 @@ static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
         @"referenceId": item.referenceId ?: @""
     };
 
-    NSLog(@"✅ [BenefitPay] Posting callback notification");
-
     [[NSNotificationCenter defaultCenter]
         postNotificationName:BenefitPayCallbackNotification
                       object:nil
                     userInfo:payload];
 
-    return YES; // ✅ ALWAYS YES
+    return YES;
 }
 
 @end
