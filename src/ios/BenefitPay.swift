@@ -125,4 +125,4 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         commandDelegate.send(result, callbackId: command.callbackId)
     }
 }
-``
+
