@@ -5,6 +5,8 @@
 
 @implementation AppDelegate (BenefitPay)
 
+#pragma mark - Associated Object
+
 - (BPDLPaymentCallBackItem *)paymentCallback {
     return objc_getAssociatedObject(self, @selector(paymentCallback));
 }
@@ -18,11 +20,13 @@
     );
 }
 
+#pragma mark - Deep Link Callback
+
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-    // ✅ Benefit-required call
+    // ✅ REQUIRED by Benefit SDK
     BPDLPaymentCallBackItem *item =
         [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
 
@@ -34,11 +38,11 @@
 
     NSString *statusString = @"unknown";
     switch (item.status) {
-        case PaymentCallBackStatusCancel:
-            statusString = @"cancelled";
-            break;
         case PaymentCallBackStatusSuccess:
             statusString = @"success";
+            break;
+        case PaymentCallBackStatusCancel:
+            statusString = @"cancelled";
             break;
         case PaymentCallBackStatusFail:
             statusString = @"failed";
@@ -48,14 +52,14 @@
     }
 
     NSDictionary *userInfo = @{
-        @"status": statusString,
-        @"merchantName": item.merchantName ?: @"",
-        @"cardNumber":  item.cardNumber ?: @"",
-        @"currency":    item.currency ?: @"",
-        @"currencyCode":item.currencyCode ?: @"",
-        @"amount":      item.amount ?: @"",
-        @"message":     item.message ?: @"",
-        @"referenceId": item.referenceId ?: @""
+        @"status"       : statusString,
+        @"merchantName" : item.merchantName ?: @"",
+        @"cardNumber"   : item.cardNumber ?: @"",
+        @"currency"     : item.currency ?: @"",
+        @"currencyCode" : item.currencyCode ?: @"",
+        @"amount"       : item.amount ?: @"",
+        @"message"      : item.message ?: @"",
+        @"referenceId"  : item.referenceId ?: @""
     };
 
     [[NSNotificationCenter defaultCenter]
