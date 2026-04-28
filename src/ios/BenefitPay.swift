@@ -191,18 +191,26 @@ default:
         )
     }
 
-    private func sendResult(
-        _ status: CDVCommandStatus,
-        _ message: String
-    ) {
-        guard let command = command else {
-            NSLog("⚠️ [BenefitPay] No command to send result to")
-            return
-        }
+ 
 
-        NSLog("✅ [BenefitPay] Sending result to JS")
-        let result =
-            CDVPluginResult(status: status, messageAs: message)
-        commandDelegate.send(result, callbackId: command.callbackId)
+private func sendResult(
+    _ status: CDVCommandStatus,
+    _ message: String
+) {
+    guard let command = command else {
+        NSLog("⚠️ [BenefitPay] Command already released")
+        return
     }
+
+    NSLog("✅ [BenefitPay] Sending result to JS")
+
+    let result = CDVPluginResult(status: status, messageAs: message)
+    result?.setKeepCallbackAs(true)   // 🔥 REQUIRED
+    commandDelegate.send(
+        result,
+        callbackId: command.callbackId
+    )
+}
+
+    
 }
