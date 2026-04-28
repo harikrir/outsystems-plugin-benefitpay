@@ -69,9 +69,8 @@
 		<source-file src="src/ios/AUBLog.swift" />
 		<source-file src="src/ios/BenefitPay.swift" />
 		<header-file src="src/ios/AppDelegate+BenefitPay.h" />
-		<source-file src="src/ios/AppDelegate+BenefitPay.m" />
-		<header-file src="src/ios/Constants.h" />
-		<source-file src="src/ios/Constants.m" />
+		<source-file src="src/ios/AppDelegate+BenefitPay.m" />	
+		<header-file src="src/ios/SceneDelegate.h" />
 		<source-file src="src/ios/SceneDelegate.m" />
 		
 		<framework src="src/ios/framework/BenefitInAppSDK.framework" embed="true" custom="true" />
