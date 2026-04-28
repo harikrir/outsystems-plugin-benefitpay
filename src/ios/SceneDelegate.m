@@ -10,7 +10,7 @@ openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts
     if (!url) return;
 
     AppDelegate *delegate =
-      (AppDelegate *)UIApplication.sharedApplication.delegate;
+        (AppDelegate *)UIApplication.sharedApplication.delegate;
 
     [delegate application:UIApplication.sharedApplication
                   openURL:url
