@@ -40,7 +40,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     func checkout(_ command: CDVInvokedUrlCommand) {
 
         self.command = command
-        AUBLog.plugin.error("Checking out...")
+        AUBLog.plugin.notice("Checking out...")
 
         if command.arguments.count == 10 {
 
@@ -76,7 +76,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
 
                 guard let innerView = bPButton!.subviews.first,
                       let button = innerView.subviews.first as? UIButton else {
-                     AUBLog.plugin.error("❌ Button creation failed")
+                     AUBLog.plugin.notice("❌ Button creation failed")
                     return
                 }
 
@@ -99,7 +99,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
     // MARK: - Callback handler
     @objc func handleCallBack(_ notification: Notification) {
 
-         AUBLog.plugin.error("📩 Callback received")
+         AUBLog.plugin.notice("📩 Callback received")
 
         guard let callbackInfo = notification.userInfo as? [String: Any] else {
             let message = "{\"status\": \"failed\", \"message\": \"Invalid callback object\"}"
@@ -111,7 +111,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             let jsonData = try JSONSerialization.data(withJSONObject: callbackInfo, options: [])
             let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
 
-             AUBLog.plugin.error("✅ Callback JSON: \(jsonString)")
+             AUBLog.plugin.notice("✅ Callback JSON: \(jsonString)")
 
             DispatchQueue.main.async {
 
@@ -144,7 +144,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
                           keepCallback: Bool = false) {
 
         guard let command = self.command else {
-             AUBLog.plugin.error("❌ No command available")
+             AUBLog.plugin.notice("❌ No command available")
             return
         }
 
