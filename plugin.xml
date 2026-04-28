@@ -51,13 +51,28 @@
 		</config-file>
 
 		
+ <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>None</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>com.aub.mobilebanking.uat.bh</string>
+                </array>
+            </dict>
+        </array>
+    </config-file>
+
+
+		
 		<source-file src="src/ios/AUBLog.swift" />
 		<source-file src="src/ios/BenefitPay.swift" />
 		<header-file src="src/ios/AppDelegate+BenefitPay.h" />
 		<source-file src="src/ios/AppDelegate+BenefitPay.m" />
 		<header-file src="src/ios/Constants.h" />
 		<source-file src="src/ios/Constants.m" />
-		
+		<source-file src="src/ios/SceneDelegate.m" />
 		
 		<framework src="src/ios/framework/BenefitInAppSDK.framework" embed="true" custom="true" />
 		<header-file src="src/ios/BridgingHeader.h" type="BridgingHeader" />
