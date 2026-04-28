@@ -1,23 +1,48 @@
 #import "AppDelegate+BenefitPay.h"
 #import <BenefitInAppSDK/BenefitInAppSDK.h>
+#import <objc/runtime.h>
 
 NSString * const BenefitPayCallbackNotification =
     @"BenefitPayCallbackNotification";
 
 @implementation AppDelegate (BenefitPay)
 
+static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
+
+- (void)setPaymentCallback:(BPDLPaymentCallBackItem *)paymentCallback
+{
+    objc_setAssociatedObject(
+        self,
+        kPaymentCallbackKey,
+        paymentCallback,
+        OBJC_ASSOCIATION_RETAIN_NONATOMIC
+    );
+}
+
+- (BPDLPaymentCallBackItem *)paymentCallback
+{
+    return objc_getAssociatedObject(self, kPaymentCallbackKey);
+}
+
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+    if (!url) return NO;
+
     BPDLPaymentCallBackItem *item =
-      [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
+        [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
 
     if (!item) return NO;
 
+    self.paymentCallback = item;
+
     NSString *status = @"failed";
-    if (item.status == PaymentCallBackStatusSuccess) status = @"success";
-    else if (item.status == PaymentCallBackStatusCancel) status = @"cancelled";
+    if (item.status == PaymentCallBackStatusSuccess) {
+        status = @"success";
+    } else if (item.status == PaymentCallBackStatusCancel) {
+        status = @"cancelled";
+    }
 
     NSDictionary *payload = @{
         @"status": status,
@@ -39,4 +64,3 @@ NSString * const BenefitPayCallbackNotification =
 }
 
 @end
-
