@@ -37,15 +37,17 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
         {
             NSLog("✅ [BenefitPay] Cached callback FOUND — replaying")
 
-            let status: String
-            switch item.status {
-            case .success:
-                status = "success"
-            case .cancel:
-                status = "cancelled"
-            default:
-                status = "failed"
-            }
+           
+let status: String
+switch item.status {
+case PaymentCallBackStatusSuccess:
+    status = "success"
+case PaymentCallBackStatusCancel:
+    status = "cancelled"
+default:
+    status = "failed"
+}
+
 
             let payload: [String: Any] = [
                 "status": status,
