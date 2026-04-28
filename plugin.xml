@@ -51,7 +51,7 @@
 		</config-file>
 
 		
-		
+		<source-file src="src/ios/AUBLog.swift" />
 		<source-file src="src/ios/BenefitPay.swift" />
 		<header-file src="src/ios/AppDelegate+BenefitPay.h" />
 		<source-file src="src/ios/AppDelegate+BenefitPay.m" />
