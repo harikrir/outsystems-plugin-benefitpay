@@ -2,52 +2,58 @@
 #import <BenefitInAppSDK/BenefitInAppSDK.h>
 #import <objc/runtime.h>
 
-// ✅ THIS MUST PRINT
-__attribute__((constructor))
-static void BenefitPayLoaded(void) {
-    NSLog(@"🔥🔥🔥 AppDelegate+BenefitPay LOADED");
-    fprintf(stderr, "🔥 STDERR AppDelegate+BenefitPay LOADED\n");
-}
-
 NSString * const BenefitPayCallbackNotification =
     @"BenefitPayCallbackNotification";
 
 @implementation AppDelegate (BenefitPay)
 
-static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
+#pragma mark - Method Swizzling
 
-- (void)setPaymentCallback:(BPDLPaymentCallBackItem *)paymentCallback {
-    objc_setAssociatedObject(
-        self,
-        kPaymentCallbackKey,
-        paymentCallback,
-        OBJC_ASSOCIATION_RETAIN_NONATOMIC
-    );
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class class = [self class];
+
+        SEL originalSelector =
+            @selector(application:openURL:options:);
+        SEL swizzledSelector =
+            @selector(benefit_application:openURL:options:);
+
+        Method originalMethod =
+            class_getInstanceMethod(class, originalSelector);
+        Method swizzledMethod =
+            class_getInstanceMethod(class, swizzledSelector);
+
+        method_exchangeImplementations(
+            originalMethod,
+            swizzledMethod
+        );
+    });
 }
 
-- (BPDLPaymentCallBackItem *)paymentCallback {
-    return objc_getAssociatedObject(self, kPaymentCallbackKey);
-}
+#pragma mark - Swizzled implementation
 
-- (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+- (BOOL)benefit_application:(UIApplication *)application
+                    openURL:(NSURL *)url
+                    options:(NSDictionary *)options
 {
-    NSLog(@"✅✅✅ openURL HIT");
-    NSLog(@"✅ RAW URL: %@", url.absoluteString);
+    // ✅ Call original OutSystems implementation
+    BOOL result =
+        [self benefit_application:application
+                           openURL:url
+                           options:options];
 
-    if (!url) return YES;
+    NSLog(@"✅ [BenefitPay] openURL intercepted: %@",
+          url.absoluteString);
 
     BPDLPaymentCallBackItem *item =
         [[BPDLPaymentCallBackItem alloc]
             initWithDeepLinkURL:url];
 
     if (!item) {
-        NSLog(@"❌ SDK did not parse URL");
-        return YES;
+        NSLog(@"❌ Not a BenefitPay callback");
+        return result;
     }
-
-    self.paymentCallback = item;
 
     NSString *status = @"fail";
     if (item.status == PaymentCallBackStatusSuccess) {
@@ -72,7 +78,7 @@ static const void *kPaymentCallbackKey = &kPaymentCallbackKey;
                       object:nil
                     userInfo:payload];
 
-    return YES;
+    return result;
 }
 
 @end
