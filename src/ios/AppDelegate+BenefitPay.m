@@ -21,21 +21,25 @@ NSString * const BenefitPayCallbackNotification = @"BenefitPayCallbackNotificati
     });
 }
 
-- (BOOL)benefit_application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+- (BOOL)benefit_application:(UIApplication *)application
+                    openURL:(NSURL *)url
+                    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+
     // 1. Call original implementation (OutSystems core logic)
     BOOL result = [self benefit_application:application openURL:url options:options];
 
     NSLog(@"[BenefitPay] Intercepted URL: %@", url.absoluteString);
 
     // 2. Initialize the SDK callback item
-    BPDLPaymentCallBackItem *item = [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
+    BPDLPaymentCallBackItem *item =
+        [[BPDLPaymentCallBackItem alloc] initWithDeepLinkURL:url];
 
     if (!item) {
         NSLog(@"[BenefitPay] Not a BenefitPay callback or parsing failed.");
         return result;
     }
 
-    [span_0](start_span)// 3. Map status based on the BPDLPaymentCallBackItem.h enum[span_0](end_span)
+    // 3. Map status based on the BPDLPaymentCallBackItem.h enum
     NSString *statusStr = @"fail";
     if (item.status == PaymentCallBackStatusSuccess) {
         statusStr = @"success";
@@ -54,11 +58,12 @@ NSString * const BenefitPayCallbackNotification = @"BenefitPayCallbackNotificati
         @"referenceId": item.referenceId ?: @""
     };
 
-    // 4. CRITICAL: Post on Main Thread to ensure the Plugin captures it immediately
+    // 4. Post on main thread so Cordova plugin receives it immediately
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:BenefitPayCallbackNotification
-                                                            object:nil
-                                                          userInfo:payload];
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:BenefitPayCallbackNotification
+                          object:nil
+                        userInfo:payload];
     });
 
     return YES;
