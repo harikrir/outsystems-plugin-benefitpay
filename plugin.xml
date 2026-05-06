@@ -58,7 +58,7 @@
                 <string>None</string>
                 <key>CFBundleURLSchemes</key>
                 <array>
-                    <string>com.aub.mobilebanking.uat.bh</string>
+                    <string>com.aub.mobilebanking.bh</string>
                 </array>
             </dict>
         </array>
