@@ -34,7 +34,7 @@ class BenefitPay: CDVPlugin, BPInAppButtonDelegate {
             object: nil
         )
 
-        let callbackTag = "com.aub.mobilebanking.uat.bh"
+        let callbackTag = "com.aub.mobilebanking.bh"
 
         // 3. Initialize Configuration
         checkoutConfiguration = BPInAppConfiguration(
